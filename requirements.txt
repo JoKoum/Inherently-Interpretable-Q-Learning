@@ -1,4 +1,4 @@
-pysgt>=1.0.2
+pysgt>=1.0.3
 gym
 matplotlib
 pygame==2.0.0

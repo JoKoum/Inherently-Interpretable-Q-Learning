@@ -7,6 +7,13 @@ from utils.scores import ScoreLogger
 from rl_models.SGTAgent import Agent
 from tqdm.auto import tqdm
 import gym
+from packaging import version
+
+if version.parse(gym.__version__) > version.parse('0.25.2'):
+    GYM = 'NEW'
+else:
+    GYM = 'OLD'
+
 
 class Experiment:
     def __init__(self, env_name):
@@ -42,15 +49,20 @@ class Experiment:
 
         start = time.process_time()
         for episode in range(1, 501):
-            state, _ = self.env.reset()
-
+            if GYM == 'NEW':
+                state, _ = self.env.reset()
+            else:
+                state = self.env.reset()
             state = np.reshape(state, [1, observation_space])
             step = 0
             while True:
                 step += 1
                 #self.env.render()
                 action = agent.act(state)
-                state_next, reward, done, _, _ = self.env.step(action)
+                if GYM == 'NEW':
+                    state_next, reward, done, _, _ = self.env.step(action)
+                else:
+                    state_next, reward, done, _ = self.env.step(action)
                 state_next = np.reshape(state_next, [1, observation_space])
                 agent.remember(state, action, reward, state_next, done)
                 state = state_next
@@ -60,8 +72,9 @@ class Experiment:
                     print("Episode: " + str(episode) + ", exploration: " + str(agent.exploration_rate) + ", score: " + str(step))
                     print("Learning rate: ", agent.model[0].lr)
                     score_logger.add_score(step, episode)
-                    if agent.model[0]._isFit:
+                    if agent.model[0].is_fit():
                         print('tree sizes: ', [tree.get_depth() for tree in agent.model])
+                        print('Total nodes: ', [estimator.get_total_nodes() for estimator in agent.model])
                     break
 
             for _ in tqdm(range(100)):
@@ -77,11 +90,14 @@ class Experiment:
 
         self.env.close()
         print('Time taken: {} minutes'.format((time.process_time() - start)/60))
-        print('Total nodes: ',[estimator.get_total_nodes() for estimator in agent.model])
+        print('Total nodes: ', [estimator.get_total_nodes() for estimator in agent.model])
 
     def agent_evaluate(self, agent, score_logger):
         for episode in range(1, 11):
-                state = self.env.reset()
+                if GYM == 'NEW':
+                    state, _ = self.env.reset()
+                else:
+                    state = self.env.reset()
                 state = np.reshape(state, [1, self.env.observation_space.shape[0]])
                 step = 0
                 while True:
@@ -91,15 +107,19 @@ class Experiment:
                     print(f'Took action {action}')
                     for i, estimator in enumerate(agent.model):
                         print(f'SGT {i+1}:\nNode path: {estimator.tree.explain(state[0])}')
-                    state_next, _, done, _ = self.env.step(action)
+                    if GYM == 'NEW':
+                        state_next, _, done, _, _ = self.env.step(action)
+                    else:
+                        state_next, _, done, _ = self.env.step(action)
                     state_next = np.reshape(state_next, [1, self.env.observation_space.shape[0]])
                     state = state_next
                     if done:
                         print('-------------------------------')
                         print("Evaluation Episode: " + str(episode) + ", score: " + str(step))
                         score_logger.add_score(step, episode)
-                        if agent.model[0]._isFit:
+                        if agent.model[0].is_fit():
                             print('tree sizes: ', [tree.get_depth() for tree in agent.model])
+                            print('Total nodes: ', [estimator.get_total_nodes() for estimator in agent.model])
                         break
 
 if __name__ == "__main__":

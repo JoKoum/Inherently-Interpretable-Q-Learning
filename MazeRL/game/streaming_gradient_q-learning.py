@@ -78,7 +78,7 @@ class Experiment:
             agents[1].save_model(score_logger.folder_path+'right_left.pkl')    
 
             print('Time taken: {} minutes'.format((time.time() - start)/60))
-            print('Total nodes: ',[[estimator.get_total_nodes() for estimator in agent.model] for agent in agents])
+            print('Total nodes: ', [[estimator.get_total_nodes() for estimator in agent.model] for agent in agents])
         
         else:
             title = ''
@@ -175,7 +175,7 @@ class Experiment:
                     print("Episode: " + str(episode) + ", exploration: " + str(agent.exploration_rate) + ", score: " + str(step))
                     print("Learning rate: ", agent.model[0].lr)
                     score_logger.add_score(round(rewards), episode)
-                    if agent.model[0]._isFit:
+                    if agent.model[0].is_fit():
                         print('tree sizes: ', [tree.get_depth() for tree in agent.model])
                     if not done:
                         timedout = True
@@ -222,7 +222,7 @@ class Experiment:
                     print("Episode: " + str(episode) + ", exploration: " + str(agents[0].exploration_rate) + ", score: " + str(step))
                     print("Learning rate: ", agents[0].model[0].lr)
                     score_logger.add_score(round(rewards), episode)
-                    if agents[0].model[0]._isFit:
+                    if agents[0].model[0].is_fit():
                         print('tree sizes: ', [[tree.get_depth() for tree in agent.model] for agent in agents])
                     if not done:
                         timedout = True
@@ -286,10 +286,10 @@ class Experiment:
                         print("Evaluation Episode: " + str(episode) + ", score: " + str(step))
                         score_logger.add_score(rewards, episode)
                         if self.config['game']['second_agent']:
-                            if agent[0].model[0]._isFit:
+                            if agent[0].model[0].is_fit():
                                 print('tree sizes: ', [[tree.get_depth() for tree in a.model] for a in agent])
                         else:
-                            if agent.model[0]._isFit:
+                            if agent.model[0].is_fit():
                                 print('tree sizes: ', [tree.get_depth() for tree in agent.model])
                         if not done:
                             timedout = True
