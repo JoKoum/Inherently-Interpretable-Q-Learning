@@ -1,6 +1,9 @@
 import numpy as np
 from collections import deque
-from pysgt.StochasticGradientTree import SGTRegressor
+try:
+    from cysgt.StochasticGradientTree import SGTRegressor
+except ModuleNotFoundError:
+    from pysgt.StochasticGradientTree import SGTRegressor
 import random
 
 class Agent:
