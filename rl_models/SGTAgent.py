@@ -5,7 +5,6 @@ try:
 except ModuleNotFoundError:
     from pysgt.StochasticGradientTree import SGTRegressor
 import random
-from copy import copy
 
 class Agent:
     def __init__(self, action_space, gamma = 0.99, learning_rate = 0.1,
@@ -85,7 +84,7 @@ class TAgent(Agent):
                  MEMORY_SIZE, epochs,
                  upper, lower)
 
-        self.target_model = [copy(estimator) for estimator in self.model]
+        self.target_model = self.model.copy()
 
     def experience_replay(self):
         if len(self.memory) < self.batch_size:
@@ -120,7 +119,7 @@ class DTAgent(Agent):
                  MEMORY_SIZE, epochs,
                  upper, lower)
 
-        self.target_model = [copy(estimator) for estimator in self.model]
+        self.target_model = self.model.copy()
 
     def experience_replay(self):
         if len(self.memory) < self.batch_size:
