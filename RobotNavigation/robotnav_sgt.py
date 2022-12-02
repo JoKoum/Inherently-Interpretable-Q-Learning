@@ -62,7 +62,7 @@ class Experiment:
                     print('-------------------------------')
                     print("Episode: " + str(episode) + ", exploration: " + str(agent.exploration_rate) + ", score: " + str(step))
                     score_logger.add_score(round(rewards), episode)
-                    if agent.model[0]._isFit:
+                    if agent.model[0].is_fit():
                         print('tree sizes: ', [tree.get_depth() for tree in agent.model])
                     break
             
@@ -102,7 +102,7 @@ class Experiment:
                         print('-------------------------------')
                         print("Evaluation Episode: " + str(episode) + ", score: " + str(step))
                         score_logger.add_score(round(rewards), episode)
-                        if agent.model[0]._isFit:
+                        if agent.model[0].is_fit():
                             print('tree sizes: ', [tree.get_depth() for tree in agent.model])
                         break
 
