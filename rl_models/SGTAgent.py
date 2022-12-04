@@ -9,7 +9,7 @@ import random
 class Agent:
     def __init__(self, action_space, gamma = 0.99, learning_rate = 0.1,
                  EXPLORATION_MAX = 1, EXPLORATION_MIN = 0.01,
-                 EXPLORATION_DECAY = 0.99, batch_size = 64,
+                 EXPLORATION_DECAY = 0.99, batch_size = 64, bins = 8,
                  MEMORY_SIZE = 1000000, epochs=8,
                  upper = [], lower = []):
 
@@ -27,7 +27,7 @@ class Agent:
 
         self.memory = deque(maxlen=MEMORY_SIZE)
 
-        self.model = [SGTRegressor(epochs=1, bins=8, upper_bounds=upper, lower_bounds=lower, learning_rate=learning_rate) for _ in range(self.action_space)]
+        self.model = [SGTRegressor(epochs=1, bins=bins, upper_bounds=upper, lower_bounds=lower, learning_rate=learning_rate) for _ in range(self.action_space)]
 
     def remember(self, state, action, reward, next_state, done):
         self.memory.append((state, action, reward, next_state, done))
@@ -74,13 +74,13 @@ class Agent:
 class TAgent(Agent):
     def __init__(self, action_space, gamma = 0.99, learning_rate = 0.1,
                  EXPLORATION_MAX = 1, EXPLORATION_MIN = 0.01,
-                 EXPLORATION_DECAY = 0.99, batch_size = 64,
+                 EXPLORATION_DECAY = 0.99, batch_size = 64, bins = 8,
                  MEMORY_SIZE = 1024, epochs=8,
                  upper=[], lower=[]):
 
         super().__init__(action_space, gamma, learning_rate,
                  EXPLORATION_MAX, EXPLORATION_MIN,
-                 EXPLORATION_DECAY, batch_size,
+                 EXPLORATION_DECAY, batch_size, bins,
                  MEMORY_SIZE, epochs,
                  upper, lower)
 
@@ -109,13 +109,13 @@ class TAgent(Agent):
 class DTAgent(Agent):
     def __init__(self, action_space, gamma = 0.99, learning_rate = 0.1,
                  EXPLORATION_MAX = 1, EXPLORATION_MIN = 0.01,
-                 EXPLORATION_DECAY = 0.99, batch_size = 64,
+                 EXPLORATION_DECAY = 0.99, batch_size = 64, bins = 8,
                  MEMORY_SIZE = 1024, epochs=8,
                  upper=[], lower=[]):
 
         super().__init__(action_space, gamma, learning_rate,
                  EXPLORATION_MAX, EXPLORATION_MIN,
-                 EXPLORATION_DECAY, batch_size,
+                 EXPLORATION_DECAY, batch_size, bins,
                  MEMORY_SIZE, epochs,
                  upper, lower)
 
@@ -148,17 +148,15 @@ class DTAgent(Agent):
 class Imitator(Agent):
     def __init__(self, action_space, gamma = 0.99, learning_rate = 1,
                  EXPLORATION_MAX = 1, EXPLORATION_MIN = 0.01,
-                 EXPLORATION_DECAY = 0.99, batch_size = 64,
+                 EXPLORATION_DECAY = 0.99, batch_size = 64, bins = 64,
                  MEMORY_SIZE = 1024, epochs=8,
                  upper=[], lower=[]):
 
         super().__init__(action_space, gamma, learning_rate,
                  EXPLORATION_MAX, EXPLORATION_MIN,
-                 EXPLORATION_DECAY, batch_size,
+                 EXPLORATION_DECAY, batch_size, bins,
                  MEMORY_SIZE, epochs,
                  upper, lower)
-
-        self.model = [SGTRegressor(epochs=1, upper_bounds=upper, lower_bounds=lower, learning_rate=learning_rate) for _ in range(self.action_space)]
 
         import torch
         self.target = torch.load(r'./PolicyDistillation/teacher.pt')
