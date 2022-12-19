@@ -60,6 +60,7 @@ class Experiment:
                     score_logger.add_score(step, episode)
                     if agent.model[0].is_fit():
                         print('tree sizes: ', [tree.get_depth() for tree in agent.model])
+                        print('Total nodes: ', [estimator.get_total_nodes() for estimator in agent.model])
                     break
 
             for _ in tqdm(range(100)):
